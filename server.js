@@ -122,7 +122,7 @@ app.post("/addMovies", addMovieHandler);
 
 function addMovieHandler(req, res) {
   const newMovie = req.body;
-  const sql = `INSERT into movies_table (id,title, poster, summary , rate , comments) values ($1,$2,$3,$4,$5,$6) RETURNING *;`;
+  const sql = `INSERT into movies_table (id,title, poster, summary , rate , comments) values ($1,$2,$3,$4,$5,$6);`;
   const values = [
     newMovie.id,
     newMovie.title,
@@ -132,8 +132,8 @@ function addMovieHandler(req, res) {
     newMovie.comments,
   ];
 
-  client.query(sql, values).then((data) => {
-    res.status(200).send(" movie is added.");
+  client.query(sql, values).then(() => {
+    res.send(" movie is added.");
   });
 }
 
