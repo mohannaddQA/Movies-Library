@@ -9,8 +9,13 @@ const app = express();
 const movieData = require("./MovieData/data.json");
 const axios = require("axios");
 const port = 3001;
-app.listen(port);
+
 app.use(cors());
+
+////
+const pg = require("pg");
+const client = new pg.Client(process.env.DATABASE_URL);
+app.use(express.json());
 /////////////////////////////////////////////////home page
 function myMovie(title, poster_path, overview) {
   this.title = title;
@@ -100,6 +105,38 @@ async function regionalProviders(request, response) {
 
 app.get("/providers", regionalProviders);
 
+/////////////////////////////////////////////////////// db handlers
+
+/////// get movies
+app.get("/getMovies", getMoviesHandler);
+
+function getMoviesHandler(req, res) {
+  const sql = `select * from movies_table;`; // i inserted only two random movie just for testing purpose .
+  client.query(sql).then((data) => {
+    res.status(200).send(data.rows);
+  });
+}
+
+/////// add movies
+app.post("/addMovies", addMovieHandler);
+
+function addMovieHandler(req, res) {
+  const newMovie = req.body;
+  const sql = `INSERT into movies_table (id,title, poster, summary , rate , comments) values ($1,$2,$3,$4,$5,$6) RETURNING *;`;
+  const values = [
+    newMovie.id,
+    newMovie.title,
+    newMovie.poster,
+    newMovie.summary,
+    newMovie.rate,
+    newMovie.comments,
+  ];
+
+  client.query(sql, values).then((data) => {
+    res.status(200).send(" movie is added.");
+  });
+}
+
 ////////////////////////////////////////////////////////error handlers
 app.use("*", (req, res) => {
   let errorMassage = `error status : 404    responseText:Sorry, Page not found`;
@@ -109,4 +146,7 @@ app.use("/error", (req, res) => {
   let errorMassage = `error status : 500    responseText": "Sorry, somthing went wrong`;
   res.status(500).send(errorMassage);
 });
-///////////////////////////////////////////////////////
+//////////////////////////////////
+client.connect().then(() => {
+  app.listen(port);
+});
