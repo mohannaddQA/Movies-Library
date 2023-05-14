@@ -12,6 +12,7 @@ const axios = require("axios");
 /////////////////////////////////////////////////////
 const movieData = require("./MovieData/data.json");
 // const port = 3002;
+const PORT = process.env.PORT;
 app.use(cors());
 ////////////////////////////////////////////////
 const pg = require("pg");
