@@ -4,15 +4,16 @@ require("dotenv").config();
 const ApiKey = process.env.API_KEY;
 /////////////////////////////////////////////////////
 const express = require("express");
-const cors = require("cors");
 const app = express();
-const movieData = require("./MovieData/data.json");
+//////////////////////////////////////////////////////
+const cors = require("cors");
 const axios = require("axios");
-const port = 3001;
 
+/////////////////////////////////////////////////////
+const movieData = require("./MovieData/data.json");
+const port = 3002;
 app.use(cors());
-
-////
+////////////////////////////////////////////////
 const pg = require("pg");
 const client = new pg.Client(process.env.DATABASE_URL);
 app.use(express.json());
@@ -136,7 +137,45 @@ function addMovieHandler(req, res) {
     res.send(" movie is added.");
   });
 }
+///////////////////// delete movie
+function deleteMovieHandler(req, res) {
+  const id = req.params.id;
 
+  const sql = `DELETE FROM movies_table WHERE id=${id};`;
+  client.query(sql).then((data) => {
+    res.send(`movie deleted`);
+  });
+}
+
+app.delete("/deleteMovie/:id", deleteMovieHandler);
+//////////////////////update movie
+function updateMovieHandler(req, res) {
+  const id = req.params.id;
+  const sql = `UPDATE movies_table SET id = $1 , title = $2 , poster = $3 , rate=$4 , comments=$5 WHERE id = ${id};`;
+  // const { id, title, poster , rate , comments} = req.body; //deconstructing
+  const values = [
+    req.body.id,
+    req.body.title,
+    req.body.poster,
+    req.body.rate,
+    req.body.comments,
+  ];
+  client.query(sql, values).then((data) => {
+    res.send(`movie updated`);
+  });
+}
+
+app.put("/updateMovie/:id", updateMovieHandler);
+//////////////////////////////////// get Specific movie
+function getMovieByIdHandler(req, res) {
+  const id = req.params.id;
+  // we also can take it from query
+  const sql = `SELECT * FROM movies_table WHERE id = ${id}`;
+  client.query(sql).then((data) => {
+    res.send(data.rows);
+  });
+}
+app.get("/getMovie/:id", getMovieByIdHandler);
 ////////////////////////////////////////////////////////error handlers
 app.use("*", (req, res) => {
   let errorMassage = `error status : 404    responseText:Sorry, Page not found`;
@@ -146,7 +185,7 @@ app.use("/error", (req, res) => {
   let errorMassage = `error status : 500    responseText": "Sorry, somthing went wrong`;
   res.status(500).send(errorMassage);
 });
-//////////////////////////////////
+///////////////////////////////////
 client.connect().then(() => {
   app.listen(port);
 });
