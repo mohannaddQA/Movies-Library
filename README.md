@@ -1,4 +1,4 @@
-# Movies-Library - v0.1
+# Movies-Library - v0.2
 
 **Author Name**: mohannad QA
 
@@ -23,3 +23,8 @@ this is a project where i will learn how to build a server from scratch , buildi
 1. sending movie data in home page
 2. sending a msg in the favorate page
 3. dealing with errors (not found error and server error)
+
+## new updates
+
+- connected to an online dynamic data
+- added more pages (treanding , search )
