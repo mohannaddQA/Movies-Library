@@ -187,5 +187,7 @@ app.use("/error", (req, res) => {
 });
 ///////////////////////////////////
 client.connect().then(() => {
-  app.listen(port);
+  app.listen(PORT, () => {
+    console.log(`running on ${PORT}`);
+  });
 });
