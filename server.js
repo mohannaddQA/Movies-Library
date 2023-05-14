@@ -185,7 +185,7 @@ app.use("/error", (req, res) => {
   let errorMassage = `error status : 500    responseText": "Sorry, somthing went wrong`;
   res.status(500).send(errorMassage);
 });
-//////////////////////////////////
+///////////////////////////////////
 client.connect().then(() => {
   app.listen(port);
 });
